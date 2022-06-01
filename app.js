@@ -5,6 +5,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var config = require('./config');
+var mongoose = require('mongoose');
+
+main().catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect(config.db);
+}
 
 var indexRouter = require('./routes/index');
 var newsRouter = require('./routes/news');
