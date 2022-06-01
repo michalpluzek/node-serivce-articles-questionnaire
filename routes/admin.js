@@ -14,16 +14,37 @@ router.all('*', (req, res, next) => {
 
 /* GET admin page. */
 router.get('/', (req, res, next) => {
-  const newsData = new News({
-    title: 'Example title',
-    description: 'Example description',
+  News.find({}, (err, data) => {
+    res.render('admin/index', { title: 'Admin', data });
   });
+});
+
+router.get('/news/add', (req, res) => {
+  res.render('admin/news-form', {
+    title: 'Dodaj news',
+    errors: {},
+    body: {},
+  });
+});
+
+router.post('/news/add', (req, res) => {
+  const body = req.body;
+  const newsData = new News(body);
+  const errors = newsData.validateSync();
 
   newsData.save((err) => {
-    console.log(err);
+    if (err) {
+      res.render('admin/news-form', { title: 'Dodaj news', errors, body });
+      return;
+    }
+    res.redirect('/admin');
   });
+});
 
-  res.render('admin', { title: 'Admin' });
+router.get('/news/delete/:id', (req, res, next) => {
+  News.findByIdAndDelete(req.params.id, (err) => {
+    res.redirect('/admin');
+  });
 });
 
 module.exports = router;
